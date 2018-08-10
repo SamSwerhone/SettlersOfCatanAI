@@ -1,4 +1,4 @@
-#include Settlers_Classes.h
+#include "Settlers_Classes.h"
 
 Node::Node()
 {
@@ -316,6 +316,7 @@ void Board::printWelcome()
 
 resource_type Board::get_region_type(int region) { return region_resource[region]; }
 double Board::get_region_probability(int region) { return cast_region_to_prob(region); } 
+int Board::get_region_number(int region) { return regions[region]; }
 
 double cast_region_to_prob(int region)
 {

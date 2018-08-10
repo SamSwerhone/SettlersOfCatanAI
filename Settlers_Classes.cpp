@@ -1,4 +1,4 @@
-#include SettlerOfCatan.h
+#include Settler_Classes.h
 
 Node::Node()
 {

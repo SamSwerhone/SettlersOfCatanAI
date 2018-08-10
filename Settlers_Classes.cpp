@@ -309,6 +309,8 @@ int Board::get_best_open_node()
 	return -1;
 }
 
+int Board::get_region_number(int region) {return regions[i];}
+
 void Board::printWelcome()
 {
 	if(DEBUG) std::cout << "Welcome";

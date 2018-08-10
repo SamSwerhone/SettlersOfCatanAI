@@ -64,6 +64,7 @@ class Node
 		int* neighbor_list; //list of all neighboring nodes
 		int num_regions;
 		int num_neighbors;
+		int nodeID;
 		double value; //based on probability of regions, and the neighbor's neighbor's regions
 		double future_value; //based on the value of non_owned neighbor's neighbor's values
 		player owner;

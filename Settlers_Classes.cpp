@@ -142,6 +142,9 @@ Board::Board()
 	int node_count = 0;
 
 	FILE *f = fopen("hashtable.txt", "rb");
+	if (f == NULL) {
+		cout << "Could Not Open File";
+	}
 	fseek(f, 0, SEEK_END);
 	long fsize = ftell(f);
 	fseek(f, 0, SEEK_SET);

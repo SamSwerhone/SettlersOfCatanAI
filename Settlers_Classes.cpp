@@ -1,65 +1,4 @@
-#define _CRT_SECURE_NO_DEPRECATE
-
-#include <string>
-#include <iostream>
-#include <fstream>
-#include <stdio.h>
-#include <time.h>
-#include <stdlib.h>
-
-using namespace std;
-
-#define NUM_REGIONS 19
-#define BARREN_REGION 18
-
-typedef enum player
-{
-	NO_PLAYER = 0,
-	RED = 1,
-	YELLOW = 2,
-	BLUE = 3,
-	WHITE = 4
-};
-
-typedef enum resource_type
-{
-	NONE = 0,
-	WOOD = 1,
-	BRICK = 2,
-	STONE = 3,
-	WHEAT = 4,
-	SHEEP = 5,
-	BARREN = 6
-};
-
-double cast_region_to_prob(int region);
-
-class Node
-{
-public:
-	Node();
-	Node(int regions, int neighbors);
-	Node(int regions, int neighbors, int* regions_array, int* neighbors_array);
-	~Node();
-	int* get_region_list();
-	int get_num_regions();
-	void set_region_list(int * regions, int regsNum);
-	int* get_neighbor_list();
-	int get_num_neighbors();
-	void set_neighbor_list(int * neighbors, int neighborsNum);
-	player get_owner();
-	void set_owner(player new_owner);
-	void set_value(double new_val);
-	double get_value();
-	void printNode();
-private:
-	int* region_list;
-	int* neighbor_list;
-	int num_regions;
-	int num_neighbors;
-	double value; //based on probability of regions, and the neighbor's neighbor's regions
-	player owner;
-};
+#include SettlerOfCatan.h
 
 Node::Node()
 {
@@ -75,13 +14,14 @@ void Node::printNode()
 {
 	int * regionList = get_region_list();
 	int * neighborList = get_neighbor_list();
-	cout << "Regions: ";
-	for (int i = 0; i < num_regions; i++) cout << *(regionList + i) << ", ";
-	cout << "\n";
-	cout << "Neighbors: ";
-	for (int i = 0; i < num_neighbors; i++) cout << *(neighborList + i) << ",";
-	cout << "\n";
-	//cout << "Value: " << value;
+	if(DEBUG){
+		std::cout << "Regions: ";
+		for (int i = 0; i < num_regions; i++) std::cout << *(regionList + i) << ", ";
+		std::cout << "\n";
+		std::cout << "Neighbors: ";
+		for (int i = 0; i < num_neighbors; i++) std::cout << *(neighborList + i) << ",";
+		std::cout << "\n";
+	}
 }
 
 Node::Node(int regions, int neighbors)
@@ -137,25 +77,6 @@ player Node::get_owner() { return owner; }
 void Node::set_owner(player new_owner) { owner = new_owner; }
 void Node::set_value(double new_val) { value = new_val; }
 double Node::get_value() { return value; }
-
-class Board
-{
-public:
-	void printWelcome();
-	void rankNodes();
-	bool ownNode(player new_owner, int node);
-	int get_best_open_node();
-	resource_type get_region_type(int region);
-	double get_region_probability(int region);
-	Board();
-private:
-	Node nodes[54];
-	int nodeRank[54];
-	resource_type region_resource[NUM_REGIONS];
-	void node_quickSort(int arr[], int left, int right);
-	void node_insertionSort(int arr[], int n);
-	int regions[NUM_REGIONS];
-};
 
 Board::Board()
 {
@@ -244,8 +165,10 @@ Board::Board()
 			for (int k = 0; k < rrows; k++) reg_val = reg_val + cast_region_to_prob(regions[*(rptr + k)]);
 			nodes[node_count].set_value(reg_val);
 			nodes[node_count].set_neighbor_list(nptr, nrows);
-			cout << "\n**** NODE: " << node_count << " ****\n";
-			nodes[node_count].printNode();
+			if(DEBUG){
+				std::cout << "\n**** NODE: " << node_count << " ****\n";
+				nodes[node_count].printNode();
+			}
 			nrows = 0;
 			rrows = 0;
 			neighbors = true;
@@ -294,8 +217,10 @@ Board::Board()
 			for (int k = 0; k < rrows; k++) reg_val = reg_val + cast_region_to_prob(regions[*(rptr + k)]);
 			nodes[node_count].set_value(reg_val);
 			nodes[node_count].set_neighbor_list(nptr, nrows);
-			cout << "\n**** NODE: " << node_count << " ****\n";
-			nodes[node_count].printNode();
+			if(DEBUG) {
+				std::cout << "\n**** NODE: " << node_count << " ****\n";
+				nodes[node_count].printNode();
+			}
 			nrows = 0;
 			rrows = 0;
 			neighbors = true;
@@ -306,15 +231,17 @@ Board::Board()
 	//rank the nodes
 	rankNodes();
 	//display the best node (note there are probably a couple best options)
-	cout << "\n\n Best Node: " << get_best_open_node() << "\n";
+	if(DEBUG) std::cout << "\n\n Best Node: " << get_best_open_node() << "\n";
 }
 
 void Board::rankNodes()
 {
 	for (int i = 0; i < 54; i++) nodeRank[i] = i;
 	node_insertionSort(nodeRank, (sizeof(nodeRank) / sizeof(nodeRank[0])));
-	cout << "\n-----\nNode Ranks: ";
-	for (int i = 0; i < 54; i++) cout << nodeRank[i] << ", ";
+	if(DEBUG){
+		std::cout << "\n-----\nNode Ranks: ";
+		for (int i = 0; i < 54; i++) std::cout << nodeRank[i] << ", ";
+	}
 }
 
 void Board::node_quickSort(int arr[], int left, int right) {
@@ -384,7 +311,7 @@ int Board::get_best_open_node()
 
 void Board::printWelcome()
 {
-	cout << "Welcome";
+	if(DEBUG) std::cout << "Welcome";
 }
 
 resource_type Board::get_region_type(int region) { return region_resource[region]; }
@@ -398,15 +325,4 @@ double cast_region_to_prob(int region)
 	else if (region == 3 || region == 16 || region == 8 || region == 17) return 0.05556;//prob rolling 3, 11;
 	else if (region == 1 || region == 7) return 0.02778; //prob rolling 2, 12;
 	else if (region == 18) return 0;//prob rolling barren (7), actual prob is 0.16667
-}
-
-int main() {
-
-	// Declare an object of class geeks
-	Board obj1;
-
-	// accessing member function
-	obj1.printWelcome();
-	while (1);
-	return 0;
 }

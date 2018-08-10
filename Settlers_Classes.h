@@ -36,14 +36,13 @@ typedef enum resource_type
 };
 
 double cast_region_to_prob(int region); //helper function which maps region to actual probability
+int * copy_list(int size, int* list); //helper function for ensureing deep ptr array copies
 
 //This class is the atomic nodes which can players place houses/cities on
 class Node
 {
 	public:
 		Node();
-		Node(int regions, int neighbors);
-		Node(int regions, int neighbors, int* regions_array, int* neighbors_array);
 		~Node();
 		int* get_region_list(); //returns a pointer to all the regions this node occupies
 		int get_num_regions(); //returns the number of regions this node occupies
@@ -55,6 +54,10 @@ class Node
 		void set_owner(player new_owner); //sets the owner, should only be called once per game
 		void set_value(double new_val); //sets the value of this specific node bases on regions occupied
 		double get_value(); //returns the value, a number between 0 and 1;
+		void set_future_value(double new_val);
+		double get_future_value();
+		int get_nodeID();
+		void set_nodeID(int id);
 		void printNode(); //used for debugging, prints this nodes regions and neighbors
 	private:
 		int* region_list; //list of all regions occupied
@@ -62,6 +65,7 @@ class Node
 		int num_regions;
 		int num_neighbors;
 		double value; //based on probability of regions, and the neighbor's neighbor's regions
+		double future_value; //based on the value of non_owned neighbor's neighbor's values
 		player owner;
 };
 
@@ -70,6 +74,8 @@ class Board
 	public:
 		void printWelcome();//used for debugging
 		void rankNodes(); //ranks nodes based on their regions/probabilities (may be extended)
+		void updateFutureValues();
+		void updateFutureValue(int nodeID);
 		bool ownNode(player new_owner, int node); //set the passed in node's owner to the passed in player
 		int get_best_open_node(); //returns the best unoccupied node
 		resource_type get_region_type(int region); //returns the region type of the specified hexegon
@@ -80,7 +86,6 @@ class Board
 		Node nodes[54]; //contains all the nodes in the order specified in numbering_scheme.jpg
 		int nodeRank[54]; //a seperate array which sorts nodes by rank
 		resource_type region_resource[NUM_REGIONS]; //a seperate array which contains each region type
-		void node_quickSort(int arr[], int left, int right); //not used
 		void node_insertionSort(int arr[], int n); //used to sort the nodes based on probabilities 
 		int regions[NUM_REGIONS]; //contains all the regions (also known as hexagons)
 };

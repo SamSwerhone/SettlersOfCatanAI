@@ -1,6 +1,7 @@
 //SettlerOfCatan.h
 
 #define _CRT_SECURE_NO_DEPRECATE
+#define DEBUG 1
 
 #include <string>
 #include <iostream>

@@ -1,4 +1,4 @@
-//SettlerOfCatan.h
+//Settler_Classes.h
 
 #define _CRT_SECURE_NO_DEPRECATE
 #define DEBUG 1

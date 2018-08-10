@@ -19,7 +19,7 @@ public:
 private:
 	Board *board;
 	const Point2D hexes[19] = {
-	{ -TILE_WIDTH, (TILE_HEIGHT * 2) },		{ 0, (TILE_HEIGHT * 2) },		{ TILE_WIDTH, (TILE_HEIGHT * 2) },
+	{ -TILE_WIDTH, (TILE_HEIGHT * 2.0) },		{ 0, (TILE_HEIGHT * 2.0) },		{ TILE_WIDTH, (TILE_HEIGHT * 2.0) },
 
 	{ -(TILE_WIDTH * 1.5), TILE_HEIGHT },	{ -(TILE_WIDTH * 0.5), TILE_HEIGHT },	{ (TILE_WIDTH * 0.5), TILE_HEIGHT },		{ (TILE_WIDTH * 1.5), TILE_HEIGHT },
 

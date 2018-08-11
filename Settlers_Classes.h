@@ -12,6 +12,7 @@
 
 #define NUM_REGIONS 19
 #define BARREN_REGION 18
+#define FUTURE_REGION_WEIGHT 0.25
 
 //These are the colors that correspond to players
 typedef enum player

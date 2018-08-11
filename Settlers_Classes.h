@@ -1,6 +1,7 @@
 //Settler_Classes.h
 
 #define _CRT_SECURE_NO_DEPRECATE
+
 #define DEBUG 1
 
 #include <string>
@@ -9,6 +10,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <stdlib.h>
+#include <algorithm>
 
 #define NUM_REGIONS 19
 #define NUM_NODES 54
@@ -83,6 +85,7 @@ class Board
 		int get_best_open_node(); //returns the best unoccupied node
 		resource_type get_region_type(int region); //returns the region type of the specified hexegon
 		int get_region_number(int region); //returns the region value of the specified hexegon
+		int get_roll_number(int region); //returns the regions associated dice roll number
 		double get_region_probability(int region); //returns the region probability of the specified hexegon
 		Board(); //sets up the entire game, randomly under game criteria
 	private:

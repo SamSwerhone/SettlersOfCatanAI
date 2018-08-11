@@ -4,7 +4,8 @@
 #define WINDOW_WIDTH 720
 #define WINDOW_HEIGHT WINDOW_WIDTH
 
-int numplayers;
+#define DEBUG 1
+
 Board *boardptr;
 GameBoard *gameptr;
 
@@ -24,38 +25,17 @@ void Draw()
 	glutPostRedisplay();
 }
 
-void initializePieces(GameBoard *b)
+void NextMove(player p)
 {
+	int node = boardptr->get_best_open_node();
+	boardptr->ownNode(p, node);
+
+	Point2D pt = convertNodeToPoint(node);
+	Settlement s = Settlement((int)p, pt);
+	gameptr->AddPiece(&s);
+
 #if DEBUG
-	Settlement s;
-	s = Settlement(1, { -20, -30 });
-	b->AddPiece(&s);
-	s = Settlement(2, { -20, -10 });
-	b->AddPiece(&s);
-	s = Settlement(3, { -20,  10 });
-	b->AddPiece(&s);
-	s = Settlement(4, { -20,  30 });
-	b->AddPiece(&s);
-
-	City c;
-	c = City(1, { 0, -30 });
-	b->AddPiece(&c);
-	c = City(2, { 0, -10 });
-	b->AddPiece(&c);
-	c = City(3, { 0,  10 });
-	b->AddPiece(&c);
-	c = City(4, { 0,  30 });
-	b->AddPiece(&c);
-
-	Road r;
-	r = Road(1, { 20, -30 }, { 30, -20 });
-	b->AddPiece(&r);
-	r = Road(2, { 20, -10 }, { 30,   0 });
-	b->AddPiece(&r);
-	r = Road(3, { 20,  10 }, { 30,  20 });
-	b->AddPiece(&r);
-	r = Road(4, { 20,  30 }, { 30,  40 });
-	b->AddPiece(&r);
+	std::cout << "Player " << (int)p << ": " << node << ", (" << pt.x << "," << pt.y << ")" << std::endl;
 #endif
 }
 
@@ -69,7 +49,16 @@ int main(int argc, char * argv[])
 
 	game.SetBoard(&board);
 
-	initializePieces(&game);
+#if DEBUG
+	board.updateFutureValues();
+	NextMove(BLUE);
+	board.updateFutureValues();
+	NextMove(RED);
+	board.updateFutureValues();
+	NextMove(WHITE);
+	board.updateFutureValues();
+	NextMove(YELLOW);
+#endif
 
 	glutInit(&argc, argv);
 	glutInitWindowPosition(50, 50);

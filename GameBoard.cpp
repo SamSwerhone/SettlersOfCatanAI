@@ -46,7 +46,10 @@ void GameBoard::SetBoard(Board * board)
 			break;
 		}
 
-		tiles[map[i]].number = board->get_region_number(i);
+		tiles[map[i]].number = board->get_roll_number(i);
+
+		if (tiles[map[i]].number == 0)
+			tiles[map[i]].number = 7;
 	}
 }
 

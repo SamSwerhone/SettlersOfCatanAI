@@ -1,3 +1,5 @@
+#include "Settlers_Classes.h"
+
 Node::Node()
 {
 	num_regions = 0;
@@ -75,6 +77,7 @@ Board::Board()
 		regions[i] = ((random_start + i) % NUM_REGIONS);
 		if (regions[i] == 18) region_resource[i] = BARREN;
 	}
+
 	int numWOOD = 4;
 	int	numBRICK = 3;
 	int	numSTONE = 3;
@@ -275,6 +278,16 @@ int Board::get_best_open_node()
 }
 
 int Board::get_region_number(int region) { return regions[region]; }
+
+int Board::get_roll_number(int region)
+{
+	const int rolls[19] = { 5,2,6,3,8,10,9,12,11,4,8,10,9,4,5,6,3,11,0 };
+
+	if (region < 0 || region > 18)
+		return 0;
+
+	return rolls[regions[region]];
+}
 
 void Board::printWelcome()
 {

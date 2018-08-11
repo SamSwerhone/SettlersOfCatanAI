@@ -82,9 +82,13 @@ void TerrainTile::Draw()
 	glEnd();
 
 	char num[3];
-	itoa(this->number, num, 10);
+	itoa(number, num, 10);
 
-	glColor3ub(0, 0, 0);
+	if (number == 7)
+		glColor3ub(255, 0, 0);
+	else
+		glColor3ub(0, 0, 0);
+
 	glLineWidth(3);
 
 	glPushMatrix();
@@ -239,7 +243,7 @@ Point2D convertNodeToPoint(int nodeIndex)
 		{ 21,27,-1,-1,-1,-1 },
 		{ 11,16,33,38,-1,-1 },
 		{ 3,7,22,28,43,47 },
-		{ 0,12,17,34,37,51 },
+		{ 0,12,17,34,39,51 },
 		{ 4,8,23,29,44,48 },
 		{ 1,13,18,35,40,52 },
 		{ 5,9,24,30,45,49 },
@@ -251,18 +255,30 @@ Point2D convertNodeToPoint(int nodeIndex)
 
 	Point2D pt;
 
-	if (nodeIndex <= 2)			pt.y = height * 8;
-	else if (nodeIndex <= 6)	pt.y = height * 7;
-	else if (nodeIndex <= 10)	pt.y = height * 5;
-	else if (nodeIndex <= 15)	pt.y = height * 4;
-	else if (nodeIndex <= 20)	pt.y = height * 2;
-	else if (nodeIndex <= 26)	pt.y = height;
-	else if (nodeIndex <= 32)	pt.y = -height;
-	else if (nodeIndex <= 37)	pt.y = -height * 2;
-	else if (nodeIndex <= 42)	pt.y = -height * 4;
-	else if (nodeIndex <= 46)	pt.y = -height * 5;
-	else if (nodeIndex <= 50)	pt.y = -height * 7;
-	else						pt.y = height * 8;
+	if (nodeIndex <= 2)			
+		pt.y = height * 8;
+	else if (nodeIndex <= 6)	
+		pt.y = height * 7;
+	else if (nodeIndex <= 10)	
+		pt.y = height * 5;
+	else if (nodeIndex <= 15)	
+		pt.y = height * 4;
+	else if (nodeIndex <= 20)	
+		pt.y = height * 2;
+	else if (nodeIndex <= 26)	
+		pt.y = height;
+	else if (nodeIndex <= 32)	
+		pt.y = -height;
+	else if (nodeIndex <= 37)	
+		pt.y = -height * 2;
+	else if (nodeIndex <= 42)	
+		pt.y = -height * 4;
+	else if (nodeIndex <= 46)	
+		pt.y = -height * 5;
+	else if (nodeIndex <= 50)	
+		pt.y = -height * 7;
+	else						
+		pt.y = height * 8;
 
 	for (int i = 0; i < 11; i++)
 	{
@@ -271,12 +287,16 @@ Point2D convertNodeToPoint(int nodeIndex)
 
 		for (int j = 0; j < 6; j++)
 		{
-			if (nodeIndex > columns[i][j])
+			if (nodeIndex < columns[i][j])
 				break;
+
 			else if (nodeIndex == columns[i][j])
+			{
 				pt.x = (i - 5) * width;
+				return pt;
+			}
 		}
 	}
 
-	return pt;
+	return {90, 90};
 }

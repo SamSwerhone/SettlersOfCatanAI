@@ -9,6 +9,10 @@ GameBoard::GameBoard()
 
 void GameBoard::SetBoard(Board * board)
 {
+	this->settlements.clear();
+	this->cities.clear();
+	this->roads.clear();
+
 	this->board = board;
 
 	// mapping from Board class structure to GameBoard Structure

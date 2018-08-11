@@ -10,6 +10,8 @@ struct Point2D
 	double y;
 };
 
+Point2D convertNodeToPoint(int nodeIndex);
+
 typedef enum Terrain
 {
 	Fields,

@@ -4,6 +4,7 @@
 #define WINDOW_WIDTH 720
 #define WINDOW_HEIGHT WINDOW_WIDTH
 
+int numplayers;
 Board *boardptr;
 GameBoard *gameptr;
 
@@ -25,7 +26,7 @@ void Draw()
 
 void initializePieces(GameBoard *b)
 {
-#ifdef DEBUG
+#if DEBUG
 	Settlement s;
 	s = Settlement(1, { -20, -30 });
 	b->AddPiece(&s);

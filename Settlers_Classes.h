@@ -11,6 +11,7 @@
 #include <stdlib.h>
 
 #define NUM_REGIONS 19
+#define NUM_NODES 54
 #define BARREN_REGION 18
 
 //These are the colors that correspond to players

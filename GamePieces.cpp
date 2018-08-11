@@ -1,5 +1,16 @@
 #include <math.h>
+#include <GL/freeglut.h>
+#include <string>
 #include "GamePieces.h"
+
+using namespace std;
+
+const unsigned char teamColours[4][3] = {
+	{255,0,0},
+	{255,255,0},
+	{0,0,255},
+	{255,255,255}
+};
 
 TerrainTile::TerrainTile()
 {
@@ -70,6 +81,18 @@ void TerrainTile::Draw()
 
 	glEnd();
 
+	char num[3];
+	itoa(this->number, num, 10);
+
+	glColor3ub(0, 0, 0);
+	glLineWidth(3);
+
+	glPushMatrix();
+	glTranslatef(location.x - 3, location.y - 2, 1);
+	glScalef(0.05, 0.05, 1);
+	glutStrokeString(GLUT_STROKE_ROMAN, (const unsigned char *)num);
+	glPopMatrix();
+
 	glColor3ub(255, 255, 255);
 }
 
@@ -87,35 +110,7 @@ Settlement::Settlement(int team, Point2D location)
 
 void Settlement::Draw()
 {
-	unsigned char colour[3] = {0, 0, 0};
-
-	switch (team)
-	{
-	case 1:
-		colour[1] = 128;
-		colour[2] = 255;
-		break;
-
-	case 2:
-		colour[0] = 255;
-		colour[1] = 255;
-		colour[2] = 255;
-		break;
-
-	case 3:
-		colour[0] = 255;
-		break;
-
-	case 4:
-		colour[0] = 255;
-		colour[1] = 128;
-		break;
-
-	default:
-		break;
-	}
-
-	glColor3ub(colour[0], colour[1], colour[2]);
+	glColor3ub(teamColours[team - 1][0], teamColours[team - 1][1], teamColours[team - 1][2]);
 
 	glBegin(GL_QUADS);
 
@@ -126,7 +121,7 @@ void Settlement::Draw()
 
 	glEnd();
 
-	glColor3ub(colour[0] * 2 / 3, colour[1] * 2 / 3, colour[2] * 2 / 3);
+	glColor3ub(teamColours[team - 1][0] * 2 / 3, teamColours[team - 1][1] * 2 / 3, teamColours[team - 1][2] * 2 / 3);
 
 	glBegin(GL_QUADS);
 
@@ -154,35 +149,7 @@ City::City(int team, Point2D location)
 
 void City::Draw()
 {
-	unsigned char colour[3] = { 0, 0, 0 };
-
-	switch (team)
-	{
-	case 1:
-		colour[1] = 128;
-		colour[2] = 255;
-		break;
-
-	case 2:
-		colour[0] = 255;
-		colour[1] = 255;
-		colour[2] = 255;
-		break;
-
-	case 3:
-		colour[0] = 255;
-		break;
-
-	case 4:
-		colour[0] = 255;
-		colour[1] = 128;
-		break;
-
-	default:
-		break;
-	}
-
-	glColor3ub(colour[0], colour[1], colour[2]);
+	glColor3ub(teamColours[team - 1][0], teamColours[team - 1][1], teamColours[team - 1][2]);
 
 	glBegin(GL_QUADS);
 
@@ -193,7 +160,7 @@ void City::Draw()
 
 	glEnd();
 
-	glColor3ub(colour[0] * 2 / 3, colour[1] * 2 / 3, colour[2] * 2 / 3);
+	glColor3ub(teamColours[team - 1][0] * 2 / 3, teamColours[team - 1][1] * 2 / 3, teamColours[team - 1][2] * 2 / 3);
 
 	glBegin(GL_QUADS);
 
@@ -204,7 +171,7 @@ void City::Draw()
 
 	glEnd();
 
-	glColor3ub(colour[0] * 3 / 4, colour[1] * 3 / 4, colour[2] * 3 / 4);
+	glColor3ub(teamColours[team - 1][0] * 3 / 4, teamColours[team - 1][1] * 3 / 4, teamColours[team - 1][2] * 3 / 4);
 
 	glBegin(GL_QUADS);
 
@@ -233,38 +200,10 @@ Road::Road(int team, Point2D start, Point2D end)
 
 void Road::Draw()
 {
-	unsigned char colour[3] = { 0, 0, 0 };
-
-	switch (team)
-	{
-	case 1:
-		colour[1] = 128;
-		colour[2] = 255;
-		break;
-
-	case 2:
-		colour[0] = 255;
-		colour[1] = 255;
-		colour[2] = 255;
-		break;
-
-	case 3:
-		colour[0] = 255;
-		break;
-
-	case 4:
-		colour[0] = 255;
-		colour[1] = 128;
-		break;
-
-	default:
-		break;
-	}
-
 	double angle = atan2((end.y - start.y), (end.x - start.x)) * (180.0 / 3.14159);
 	double length = sqrt(pow((end.y - start.y), 2) + pow((end.x - start.x), 2));
 
-	glColor3ub(colour[0], colour[1], colour[2]);
+	glColor3ub(teamColours[team - 1][0], teamColours[team - 1][1], teamColours[team - 1][2]);
 
 	glPushMatrix();
 	glTranslatef(start.x, start.y, 0);
@@ -274,10 +213,10 @@ void Road::Draw()
 
 	glBegin(GL_QUADS);
 
-	glVertex3f(0, 0.5, 1.0);
-	glVertex3f(1, 0.5, 1.0);
-	glVertex3f(1, -0.5, 1.0);
-	glVertex3f(0, -0.5, 1.0);
+	glVertex3f(0, 0.5, 2.0);
+	glVertex3f(1, 0.5, 2.0);
+	glVertex3f(1, -0.5, 2.0);
+	glVertex3f(0, -0.5, 2.0);
 
 	glEnd();
 
@@ -289,4 +228,55 @@ void Road::Draw()
 Piece::Piece()
 {
 	this->pieceType = NA;
+}
+
+Point2D convertNodeToPoint(int nodeIndex)
+{
+	const int width = (TILE_SIZE * 0.433);
+	const int height = (TILE_SIZE * 0.25);
+
+	const int columns[11][6] = {
+		{ 21,27,-1,-1,-1,-1 },
+		{ 11,16,33,38,-1,-1 },
+		{ 3,7,22,28,43,47 },
+		{ 0,12,17,34,37,51 },
+		{ 4,8,23,29,44,48 },
+		{ 1,13,18,35,40,52 },
+		{ 5,9,24,30,45,49 },
+		{ 2,14,19,36,41,53 },
+		{ 6,10,25,31,46,50 },
+		{ 15,20,37,42,-1,-1 },
+		{ 26,32,-1,-1,-1,-1 }
+	};
+
+	Point2D pt;
+
+	if (nodeIndex <= 2)			pt.y = height * 8;
+	else if (nodeIndex <= 6)	pt.y = height * 7;
+	else if (nodeIndex <= 10)	pt.y = height * 5;
+	else if (nodeIndex <= 15)	pt.y = height * 4;
+	else if (nodeIndex <= 20)	pt.y = height * 2;
+	else if (nodeIndex <= 26)	pt.y = height;
+	else if (nodeIndex <= 32)	pt.y = -height;
+	else if (nodeIndex <= 37)	pt.y = -height * 2;
+	else if (nodeIndex <= 42)	pt.y = -height * 4;
+	else if (nodeIndex <= 46)	pt.y = -height * 5;
+	else if (nodeIndex <= 50)	pt.y = -height * 7;
+	else						pt.y = height * 8;
+
+	for (int i = 0; i < 11; i++)
+	{
+		if (nodeIndex < columns[i][0])
+			continue;
+
+		for (int j = 0; j < 6; j++)
+		{
+			if (nodeIndex > columns[i][j])
+				break;
+			else if (nodeIndex == columns[i][j])
+				pt.x = (i - 5) * width;
+		}
+	}
+
+	return pt;
 }

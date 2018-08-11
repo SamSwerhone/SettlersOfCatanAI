@@ -1,5 +1,3 @@
-#include "Settlers_Classes.h"
-
 Node::Node()
 {
 	num_regions = 0;
@@ -27,8 +25,8 @@ void Node::printNode()
 
 Node::~Node()
 {
-	if(region_list != NULL) delete[] region_list;
-	if(neighbor_list != NULL) delete[] neighbor_list;
+	if (region_list != NULL) delete[] region_list;
+	if (neighbor_list != NULL) delete[] neighbor_list;
 }
 
 int* Node::get_region_list() { return region_list; }
@@ -83,7 +81,7 @@ Board::Board()
 	int	numWHEAT = 4;
 	int numSHEEP = 4;
 	//randomly assign regions, probably  a more efficient way to do this
-	for (int i = 0; i < NUM_REGIONS; i=i)
+	for (int i = 0; i < NUM_REGIONS; i = i)
 	{
 		random_start = (rand() % 5) + 1;
 		if (region_resource[i] == BARREN) {
@@ -220,7 +218,7 @@ Board::Board()
 	//rank the nodes
 	rankNodes();
 	//display the best node (note there are probably a couple best options)
-	if(DEBUG) std::cout << "\n\n Best Node: " << get_best_open_node() << "\n";
+	if (DEBUG) std::cout << "\n\n Best Node: " << get_best_open_node() << "\n";
 }
 
 void Board::rankNodes()
@@ -244,7 +242,10 @@ void Board::node_insertionSort(int arr[], int n)
 		/* Move elements of arr[0..i-1], that are
 		greater than key, to one position ahead
 		of their current position */
-		while (j >= 0 && nodes[arr[j]].get_value() > nodes[key].get_value())
+		while (j >= 0 && 
+				(nodes[arr[j]].get_value() + (FUTURE_REGION_WEIGHT*nodes[arr[j]].get_future_value()))
+				> nodes[key].get_value() + (FUTURE_REGION_WEIGHT*nodes[key].get_future_value())
+				)
 		{
 			arr[j + 1] = arr[j];
 			j = j - 1;
@@ -303,14 +304,14 @@ void Board::updateFutureValue(int nodeID) {
 				}
 			}
 		}
-			
+
 	}
-	if(DEBUG) std::cout << "\n Node " << nodeID << " future value is: " << next_future_value;
+	if (DEBUG) std::cout << "\n Node " << nodeID << " future value is: " << next_future_value;
 	nodes[nodeID].set_future_value(next_future_value);
 }
 
 resource_type Board::get_region_type(int region) { return region_resource[region]; }
-double Board::get_region_probability(int region) { return cast_region_to_prob(region); } 
+double Board::get_region_probability(int region) { return cast_region_to_prob(region); }
 
 double cast_region_to_prob(int region)
 {

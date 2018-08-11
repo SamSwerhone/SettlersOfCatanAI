@@ -247,8 +247,8 @@ void Board::node_insertionSort(int arr[], int n)
 		of their current position */
 		while (j >= 0 && 
 				(nodes[arr[j]].get_value() + (FUTURE_REGION_WEIGHT*nodes[arr[j]].get_future_value()))
-				> nodes[key].get_value() + (FUTURE_REGION_WEIGHT*nodes[key].get_future_value())
-				)
+				> nodes[key].get_value() + (FUTURE_REGION_WEIGHT*nodes[key].get_future_value()))
+				
 		{
 			arr[j + 1] = arr[j];
 			j = j - 1;

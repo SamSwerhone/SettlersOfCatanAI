@@ -1,10 +1,10 @@
-#include "Settlers_Classes.h"
-
 Node::Node()
 {
 	num_regions = 0;
 	num_neighbors = 0;
+	nodeID = 0;
 	value = 0;
+	future_value = 0;
 	region_list = NULL; //initalizes an empty int array of size regions
 	neighbor_list = NULL; //initalizes an empty int array of size neighbors
 	owner = NO_PLAYER;
@@ -14,42 +14,19 @@ void Node::printNode()
 {
 	int * regionList = get_region_list();
 	int * neighborList = get_neighbor_list();
-	if(DEBUG){
-		std::cout << "Regions: ";
-		for (int i = 0; i < num_regions; i++) std::cout << *(regionList + i) << ", ";
-		std::cout << "\n";
-		std::cout << "Neighbors: ";
-		for (int i = 0; i < num_neighbors; i++) std::cout << *(neighborList + i) << ",";
-		std::cout << "\n";
-	}
-}
-
-Node::Node(int regions, int neighbors)
-{
-	value = 0;
-	num_regions = regions;
-	num_neighbors = neighbors;
-	region_list = new int[regions](); //initalizes an empty int array of size regions
-	neighbor_list = new int[neighbors](); //initalizes an empty int array of size neighbors
-	owner = NO_PLAYER;
-}
-
-Node::Node(int regions, int neighbors, int* regions_array, int* neighbors_array)
-{
-	value = 0;
-	num_regions = regions;
-	num_neighbors = neighbors;
-	region_list = new int[regions](); //initalizes an empty int array of size regions
-	neighbor_list = new int[neighbors](); //initalizes an empty int array of size neighbors
-	owner = NO_PLAYER;
-	for (int i = 0; i < num_regions; i++) region_list[i] = regions_array[i];
-	for (int i = 0; i < num_neighbors; i++) neighbor_list[i] = neighbors_array[i];
+	std::cout << "Regions: ";
+	for (int i = 0; i < num_regions; i++) std::cout << *(regionList + i) << ", ";
+	std::cout << "\n";
+	std::cout << "Neighbors: ";
+	for (int i = 0; i < num_neighbors; i++) std::cout << *(neighborList + i) << ",";
+	std::cout << "\n";
+	std::cout << "Value: " << value;
 }
 
 Node::~Node()
 {
-	delete[] region_list;
-	delete[] neighbor_list;
+	if (region_list != NULL) delete[] region_list;
+	if (neighbor_list != NULL) delete[] neighbor_list;
 }
 
 int* Node::get_region_list() { return region_list; }
@@ -61,22 +38,24 @@ void Node::set_region_list(int * regions, int regsNum)
 {
 	delete[] region_list;
 	num_regions = regsNum;
-	region_list = new int[regsNum](); //initalizes an empty int array of size regions
-	for (int i = 0; i < regsNum; i++) region_list[i] = regions[i];
+	region_list = copy_list(regsNum, regions);
 }
 
 void Node::set_neighbor_list(int * neighbors, int neighborsNum)
 {
 	delete[] neighbor_list;
 	num_neighbors = neighborsNum;
-	neighbor_list = new int[neighborsNum](); //initalizes an empty int array of size regions
-	for (int i = 0; i < neighborsNum; i++) neighbor_list[i] = neighbors[i];
+	neighbor_list = copy_list(neighborsNum, neighbors);
 }
 
 player Node::get_owner() { return owner; }
 void Node::set_owner(player new_owner) { owner = new_owner; }
 void Node::set_value(double new_val) { value = new_val; }
 double Node::get_value() { return value; }
+void Node::set_future_value(double new_val) { future_value = new_val; }
+double Node::get_future_value() { return future_value; }
+void Node::set_nodeID(int new_val) { nodeID = new_val; }
+int Node::get_nodeID() { return nodeID; }
 
 Board::Board()
 {
@@ -102,7 +81,7 @@ Board::Board()
 	int	numWHEAT = 4;
 	int numSHEEP = 4;
 	//randomly assign regions, probably  a more efficient way to do this
-	for (int i = 0; i < NUM_REGIONS; i=i)
+	for (int i = 0; i < NUM_REGIONS; i = i)
 	{
 		random_start = (rand() % 5) + 1;
 		if (region_resource[i] == BARREN) {
@@ -137,8 +116,8 @@ Board::Board()
 	bool neighbors = true;
 	char c = 'Z';
 	int val = 0;
-	int *rptr = (int *)malloc(3);
-	int *nptr = (int *)malloc(3);
+	int *rptr = new int[3];
+	int *nptr = new int[3];
 	int node_count = 0;
 
 	FILE *f = fopen("hashtable.txt", "rb");
@@ -168,7 +147,8 @@ Board::Board()
 			for (int k = 0; k < rrows; k++) reg_val = reg_val + cast_region_to_prob(regions[*(rptr + k)]);
 			nodes[node_count].set_value(reg_val);
 			nodes[node_count].set_neighbor_list(nptr, nrows);
-			if(DEBUG){
+			nodes[node_count].set_nodeID(node_count);
+			if (DEBUG) {
 				std::cout << "\n**** NODE: " << node_count << " ****\n";
 				nodes[node_count].printNode();
 			}
@@ -220,7 +200,8 @@ Board::Board()
 			for (int k = 0; k < rrows; k++) reg_val = reg_val + cast_region_to_prob(regions[*(rptr + k)]);
 			nodes[node_count].set_value(reg_val);
 			nodes[node_count].set_neighbor_list(nptr, nrows);
-			if(DEBUG) {
+			nodes[node_count].set_nodeID(node_count);
+			if (DEBUG) {
 				std::cout << "\n**** NODE: " << node_count << " ****\n";
 				nodes[node_count].printNode();
 			}
@@ -231,45 +212,23 @@ Board::Board()
 			node_count++;
 		}
 	}
+	delete[] nptr;
+	delete[] rptr;
+	updateFutureValues();
 	//rank the nodes
 	rankNodes();
 	//display the best node (note there are probably a couple best options)
-	if(DEBUG) std::cout << "\n\n Best Node: " << get_best_open_node() << "\n";
+	if (DEBUG) std::cout << "\n\n Best Node: " << get_best_open_node() << "\n";
 }
 
 void Board::rankNodes()
 {
 	for (int i = 0; i < 54; i++) nodeRank[i] = i;
 	node_insertionSort(nodeRank, (sizeof(nodeRank) / sizeof(nodeRank[0])));
-	if(DEBUG){
+	if (DEBUG) {
 		std::cout << "\n-----\nNode Ranks: ";
 		for (int i = 0; i < 54; i++) std::cout << nodeRank[i] << ", ";
 	}
-}
-
-void Board::node_quickSort(int arr[], int left, int right) {
-	int i = left, j = right;
-	int tmp;
-	int pivot = nodes[arr[(left + right) / 2]].get_value();
-	/* partition */
-	while (i <= j) {
-		while (nodes[arr[i]].get_value() < pivot)
-			i++;
-		while (nodes[arr[j]].get_value() > pivot)
-			j--;
-		if (i <= j) {
-			tmp = arr[i];
-			arr[i] = arr[j];
-			arr[j] = tmp;
-			i++;
-			j--;
-		}
-	};
-	/* recursion */
-	if (left < j)
-		node_quickSort(arr, left, j);
-	if (i < right)
-		node_quickSort(arr, i, right);
 }
 
 void Board::node_insertionSort(int arr[], int n)
@@ -283,7 +242,10 @@ void Board::node_insertionSort(int arr[], int n)
 		/* Move elements of arr[0..i-1], that are
 		greater than key, to one position ahead
 		of their current position */
-		while (j >= 0 && nodes[arr[j]].get_value() > nodes[key].get_value())
+		while (j >= 0 && 
+				(nodes[arr[j]].get_value() + (FUTURE_REGION_WEIGHT*nodes[arr[j]].get_future_value()))
+				> nodes[key].get_value() + (FUTURE_REGION_WEIGHT*nodes[key].get_future_value())
+				)
 		{
 			arr[j + 1] = arr[j];
 			j = j - 1;
@@ -312,15 +274,44 @@ int Board::get_best_open_node()
 	return -1;
 }
 
-int Board::get_region_number(int region) {return regions[region];}
+int Board::get_region_number(int region) { return regions[region]; }
 
 void Board::printWelcome()
 {
-	if(DEBUG) std::cout << "Welcome";
+	std::cout << "Welcome";
+}
+
+
+void Board::updateFutureValues() {
+	for (int i = 0; i < 54; i++) {
+		updateFutureValue(i);
+	}
+}
+void Board::updateFutureValue(int nodeID) {
+	int * immediateNeighbors = nodes[nodeID].get_neighbor_list();
+	int immediateNeighborsNum = nodes[nodeID].get_num_neighbors();
+	int *tempNeighbors = NULL;
+	int tempNeighborsNum = 0;
+	double next_future_value = 0;
+	for (int i = 0; i < immediateNeighborsNum; i++)
+	{
+		if (nodes[*immediateNeighbors + i].get_owner() == NO_PLAYER) {
+			tempNeighbors = nodes[*immediateNeighbors + i].get_neighbor_list();
+			tempNeighborsNum = nodes[*immediateNeighbors + i].get_num_neighbors();
+			for (int j = 0; j < tempNeighborsNum; j++) {
+				if (nodes[*immediateNeighbors + i].get_owner() == NO_PLAYER && nodes[*immediateNeighbors + i].get_nodeID() != nodeID) {
+					next_future_value += nodes[*immediateNeighbors + i].get_value();
+				}
+			}
+		}
+
+	}
+	if (DEBUG) std::cout << "\n Node " << nodeID << " future value is: " << next_future_value;
+	nodes[nodeID].set_future_value(next_future_value);
 }
 
 resource_type Board::get_region_type(int region) { return region_resource[region]; }
-double Board::get_region_probability(int region) { return cast_region_to_prob(region); } 
+double Board::get_region_probability(int region) { return cast_region_to_prob(region); }
 
 double cast_region_to_prob(int region)
 {
@@ -330,4 +321,12 @@ double cast_region_to_prob(int region)
 	else if (region == 3 || region == 16 || region == 8 || region == 17) return 0.05556;//prob rolling 3, 11;
 	else if (region == 1 || region == 7) return 0.02778; //prob rolling 2, 12;
 	else if (region == 18) return 0;//prob rolling barren (7), actual prob is 0.16667
+}
+
+int * copy_list(int size, int* list) {
+	int* returnptr = new int[size];
+	for (int i = 0; i < size; i++) {
+		*(returnptr + i) = *(list + i);
+	}
+	return returnptr;
 }

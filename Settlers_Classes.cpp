@@ -270,9 +270,23 @@ bool Board::ownNode(player new_owner, int node)
 int Board::get_best_open_node()
 {
 	bool open = false;
+	bool neighbors_open = true;
+	int num_bors = 0;
+	int * bors;
 	for (int i = 53; i >= 0; i--)
 	{
-		if (nodes[nodeRank[i]].get_owner() == NO_PLAYER) return nodeRank[i];
+		//if node is open
+		if (nodes[nodeRank[i]].get_owner() == NO_PLAYER) 
+		{
+			neighbors_open = true;
+			num_bors = nodes[nodeRank[i]].get_num_neighbors();
+			bors = nodes[nodeRank[i]].get_neighbor_list();
+			//if all it's neighbors are open too
+			for(j = 0; j < num_bors; j++)
+			{
+				(nodes[*(bors+j)].get_owner() != NO_PLAYER) neighbors_open = false;
+			}
+			if(neighbors_open) return nodeRank[i];
 	}
 	return -1;
 }
